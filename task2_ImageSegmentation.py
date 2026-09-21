@@ -1,4 +1,5 @@
 import os
+import time
 
 import PIL
 import torch
@@ -406,7 +407,8 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=30)
 
-writer = SummaryWriter(log_dir='runs/UNet')
+run_id = time.strftime('%Y%m%d_%H%M%S')
+writer = SummaryWriter(log_dir=f'runs/UNet_{run_id}')
 
 # 모델 그래프 기록
 dummy_input = torch.zeros(1, 3, 128, 128).to(device)
@@ -433,7 +435,7 @@ for epoch in range(1, EPOCHS + 1):
         print(f"{epoch:>6} | {tr_loss:>8.4f} | {tr_miou:>7.4f} | {val_loss:>9.4f} | {val_miou:>8.4f}")
 
 print(f"\n최종 Val mIoU : {history['val_miou'][-1]:.4f}")
-print(f"TensorBoard 로그: runs/UNet")
+print(f"TensorBoard 로그: runs/UNet_{run_id}")
 # TensorBoard에 예측 이미지 기록 (제공)
 def log_prediction_images(model, loader, writer, epoch, n=4, tag='val_predictions'):
     model.eval()
